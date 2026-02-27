@@ -1,0 +1,126 @@
+[gd_scene format=4 uid="uid://bmlmskqadm3m8"]
+
+[ext_resource type="Texture2D" uid="uid://bfxshit00h8ib" path="res://assets/PNG/environment/layers/tilesets.png" id="1_2q6dc"]
+[ext_resource type="PackedScene" uid="uid://cxmpd37g1ktsr" path="res://scenes/player.tscn" id="2_w7c3h"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w7c3h"]
+texture = ExtResource("1_2q6dc")
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+8:1/0 = 0
+11:1/0 = 0
+12:1/0 = 0
+13:1/0 = 0
+14:1/0 = 0
+16:1/0 = 0
+17:1/0 = 0
+18:1/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+8:3/0 = 0
+10:3/0 = 0
+12:3/0 = 0
+14:3/0 = 0
+16:3/0 = 0
+17:3/0 = 0
+19:3/0 = 0
+20:3/0 = 0
+22:3/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+8:4/0 = 0
+10:4/0 = 0
+16:4/0 = 0
+17:4/0 = 0
+19:4/0 = 0
+20:4/0 = 0
+22:4/0 = 0
+1:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+6:6/0 = 0
+8:6/0 = 0
+10:6/0 = 0
+11:6/0 = 0
+13:6/0 = 0
+14:6/0 = 0
+15:6/0 = 0
+16:6/0 = 0
+21:6/0 = 0
+1:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+6:7/0 = 0
+8:7/0 = 0
+10:7/0 = 0
+11:7/0 = 0
+13:7/0 = 0
+14:7/0 = 0
+15:7/0 = 0
+16:7/0 = 0
+18:7/0 = 0
+19:7/0 = 0
+1:8/0 = 0
+12:8/0 = 0
+13:8/0 = 0
+14:8/0 = 0
+15:8/0 = 0
+15:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+16:8/0 = 0
+17:8/0 = 0
+18:8/0 = 0
+19:8/0 = 0
+21:8/0 = 0
+22:8/0 = 0
+3:9/0 = 0
+5:9/0 = 0
+7:9/0 = 0
+8:9/0 = 0
+10:9/0 = 0
+11:9/0 = 0
+13:9/0 = 0
+14:9/0 = 0
+15:9/0 = 0
+16:9/0 = 0
+18:9/0 = 0
+19:9/0 = 0
+21:9/0 = 0
+22:9/0 = 0
+3:10/0 = 0
+5:10/0 = 0
+7:10/0 = 0
+8:10/0 = 0
+10:10/0 = 0
+11:10/0 = 0
+13:10/0 = 0
+14:10/0 = 0
+15:10/0 = 0
+16:10/0 = 0
+18:10/0 = 0
+19:10/0 = 0
+13:11/0 = 0
+14:11/0 = 0
+15:11/0 = 0
+16:11/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_w8frs"]
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_w7c3h")
+
+[node name="level" type="Node2D" unique_id=2146417796]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1144684307]
+tile_map_data = PackedByteArray("AAAAAP3/AAAPAAgAAAAAAP7/AAAPAAgAAAAAAP//AAAPAAgAAAABAP3/AAAPAAgAAAABAP7/AAAPAAgAAAABAP//AAAPAAgAAAACAP3/AAAPAAgAAAACAP7/AAAPAAgAAAACAP//AAAPAAgAAAADAP3/AAAPAAgAAAADAP7/AAAPAAgAAAADAP//AAAPAAgAAAAEAP3/AAAPAAgAAAAEAP7/AAAPAAgAAAAEAP//AAAPAAgAAAAFAP3/AAAPAAgAAAAFAP7/AAAPAAgAAAAFAP//AAAPAAgAAAAGAP3/AAAPAAgAAAAGAP7/AAAPAAgAAAAGAP//AAAPAAgAAAAHAP3/AAAPAAgAAAAHAP7/AAAPAAgAAAAHAP//AAAPAAgAAAAIAP3/AAAPAAgAAAAIAP7/AAAPAAgAAAAIAP//AAAPAAgAAAAJAP3/AAAPAAgAAAAJAP7/AAAPAAgAAAAJAP//AAAPAAgAAAAKAP3/AAAPAAgAAAAKAP7/AAAPAAgAAAAKAP//AAAPAAgAAAALAP3/AAAPAAgAAAALAP7/AAAPAAgAAAALAP//AAAPAAgAAAAMAP3/AAAPAAgAAAAMAP7/AAAPAAgAAAAMAP//AAAPAAgAAAANAP3/AAAPAAgAAAANAP7/AAAPAAgAAAANAP//AAAPAAgAAAAOAP3/AAAPAAgAAAAOAP7/AAAPAAgAAAAOAP//AAAPAAgAAAAPAP3/AAAPAAgAAAAPAP7/AAAPAAgAAAAPAP//AAAPAAgAAAAQAP3/AAAPAAgAAAAQAP7/AAAPAAgAAAAQAP//AAAPAAgAAAARAP3/AAAPAAgAAAARAP7/AAAPAAgAAAARAP//AAAPAAgAAAASAP3/AAAPAAgAAAASAP7/AAAPAAgAAAASAP//AAAPAAgAAAATAP3/AAAPAAgAAAATAP7/AAAPAAgAAAATAP//AAAPAAgAAAAUAP3/AAAPAAgAAAAUAP7/AAAPAAgAAAAUAP//AAAPAAgAAAAVAP3/AAAPAAgAAAAVAP7/AAAPAAgAAAAVAP//AAAPAAgAAAAWAP3/AAAPAAgAAAAWAP7/AAAPAAgAAAAWAP//AAAPAAgAAAAXAP3/AAAPAAgAAAAXAP7/AAAPAAgAAAAXAP//AAAPAAgAAAAYAP3/AAAPAAgAAAAYAP7/AAAPAAgAAAAYAP//AAAPAAgAAAAZAP3/AAAPAAgAAAAZAP7/AAAPAAgAAAAZAP//AAAPAAgAAAAaAP3/AAAPAAgAAAAaAP7/AAAPAAgAAAAaAP//AAAPAAgAAAAbAP3/AAAPAAgAAAAbAP7/AAAPAAgAAAAbAP//AAAPAAgAAAAcAP3/AAAPAAgAAAAcAP7/AAAPAAgAAAAcAP//AAAPAAgAAAA=")
+tile_set = SubResource("TileSet_w8frs")
+
+[node name="Player" parent="." unique_id=1212199937 instance=ExtResource("2_w7c3h")]
+position = Vector2(36, -70)
+
+[node name="Camera2D" type="Camera2D" parent="Player" unique_id=1542786777]
