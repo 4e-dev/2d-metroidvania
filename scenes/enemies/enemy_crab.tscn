@@ -76,15 +76,16 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_my6b7"]
 size = Vector2(22, 26)
 
-[node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291]
+[node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291 node_paths=PackedStringArray("Sprite")]
 script = ExtResource("1_i34dn")
+Sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1062933666]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_0x7xn")
 animation = &"crab-idle"
 autoplay = "crab-idle"
-frame_progress = 0.3710703
+frame_progress = 0.721278
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
 position = Vector2(0, -13)

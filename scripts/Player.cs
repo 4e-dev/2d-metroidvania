@@ -84,13 +84,13 @@ public partial class Player : CharacterBody2D
 			}
 			break;
 			case AnimationState.Run: {
-				Sprite.FlipH = Velocity.X < 0 ? true : false;
+				Sprite.FlipH = Velocity.X < 0;
 				Sprite.Play("run");
 			}
 			break;
 			case AnimationState.Jump: {
 				if (IsMoving)
-					Sprite.FlipH = Velocity.X < 0 ? true : false;
+					Sprite.FlipH = Velocity.X < 0;
 				Sprite.Play("jump");
 			}
 			break;
