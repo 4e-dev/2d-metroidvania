@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://d2vvjj6yk3aex"]
+
+[ext_resource type="Texture2D" uid="uid://bi44yepth8cd8" path="res://assets/PNG/spritesheets/enemies/crab-idle.png" id="1_my6b7"]
+[ext_resource type="Texture2D" uid="uid://8grvfpg0mc72" path="res://assets/PNG/spritesheets/enemies/crab-walk.png" id="2_i34dn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yhf7k"]
+atlas = ExtResource("1_my6b7")
+region = Rect2(0, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0rk5o"]
+atlas = ExtResource("1_my6b7")
+region = Rect2(48, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lf1pd"]
+atlas = ExtResource("1_my6b7")
+region = Rect2(96, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ocow"]
+atlas = ExtResource("1_my6b7")
+region = Rect2(144, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8a34g"]
+atlas = ExtResource("2_i34dn")
+region = Rect2(0, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_30qgn"]
+atlas = ExtResource("2_i34dn")
+region = Rect2(48, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_asxf5"]
+atlas = ExtResource("2_i34dn")
+region = Rect2(96, 0, 48, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mknej"]
+atlas = ExtResource("2_i34dn")
+region = Rect2(144, 0, 48, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0x7xn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yhf7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0rk5o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lf1pd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ocow")
+}],
+"loop": true,
+"name": &"crab-idle",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8a34g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_30qgn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_asxf5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mknej")
+}],
+"loop": true,
+"name": &"crab-walk",
+"speed": 8.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_my6b7"]
+size = Vector2(22, 26)
+
+[node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1062933666]
+position = Vector2(0, -16)
+sprite_frames = SubResource("SpriteFrames_0x7xn")
+animation = &"crab-idle"
+autoplay = "crab-idle"
+frame_progress = 0.85505986
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_my6b7")
