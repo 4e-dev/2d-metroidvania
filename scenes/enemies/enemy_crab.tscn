@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://d2vvjj6yk3aex"]
 
+[ext_resource type="Script" uid="uid://dbl02q11wj1mj" path="res://scripts/EnemyCrab.cs" id="1_i34dn"]
 [ext_resource type="Texture2D" uid="uid://bi44yepth8cd8" path="res://assets/PNG/spritesheets/enemies/crab-idle.png" id="1_my6b7"]
 [ext_resource type="Texture2D" uid="uid://8grvfpg0mc72" path="res://assets/PNG/spritesheets/enemies/crab-walk.png" id="2_i34dn"]
 
@@ -76,13 +77,14 @@ animations = [{
 size = Vector2(22, 26)
 
 [node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291]
+script = ExtResource("1_i34dn")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1062933666]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_0x7xn")
 animation = &"crab-idle"
 autoplay = "crab-idle"
-frame_progress = 0.85505986
+frame_progress = 0.3710703
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
 position = Vector2(0, -13)
