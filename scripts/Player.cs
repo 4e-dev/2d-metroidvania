@@ -4,10 +4,9 @@ using System;
 public partial class Player : CharacterBody2D
 {
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
-
-	private const float Gravity = 1000f;
-	private const float JumpImpulse = 350f;
-	private const float Speed = 300f;
+	[Export] public float Gravity = 1000f;
+	[Export] public float JumpImpulse = 350f;
+	[Export] public float Speed = 300f;
 
 	private enum AnimationState {
 		Cling,
