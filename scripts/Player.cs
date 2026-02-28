@@ -29,17 +29,16 @@ public partial class Player : CharacterBody2D
 	public override void _PhysicsProcess(double delta) {
 		float dt = (float)delta;
 
-		PlayerFalling(dt);
-		PlayerIdle();
-		PlayerRun();
-		PlayerJump();
+		PhysicsFalling(dt);
+		PhysicsRun();
+		PhysicsJump();
 
 		MoveAndSlide();
 
-		PlayerAnimation();
+		PlayAnimation();
 	}
 
-	private void PlayerFalling(float delta) {
+	private void PhysicsFalling(float delta) {
 		if (!IsOnFloor()) {
 			Vector2 DownwardVelocity = Velocity;
 			DownwardVelocity.Y += Gravity * delta;
@@ -47,20 +46,10 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void PlayerIdle() {
-		if (IsOnFloor()) {
-			CurrentAnimationState = AnimationState.Idle;
-		}
-	}
-
-	private void PlayerRun() {
+	private void PhysicsRun() {
 		float HorizontalDirection = Input.GetAxis("move_left", "move_right");
 		Vector2 HorizontalVelocity = Velocity;
-
 		if (HorizontalDirection != 0) {
-			// TODO: only change the animation if the player isn't jumping
-            Sprite.FlipH = HorizontalDirection < 0 ? true : false;
-            CurrentAnimationState = AnimationState.Run;
 			HorizontalVelocity.X = HorizontalDirection * Speed;
 		} else {
 			HorizontalVelocity.X = 0;
@@ -68,31 +57,44 @@ public partial class Player : CharacterBody2D
 		Velocity = HorizontalVelocity;
 	}
 
-	// TODO: coding up jump state logic
-	// jump should only last while in the air (?) --> let's see how that turns out
-	private void PlayerJump() {
+	private void PhysicsJump() {
 		if (Input.IsActionJustPressed("jump")) {
-			CurrentAnimationState = AnimationState.Jump;
-
-			Vector2 UpwardVelocity = Velocity; // apply upward velocity
+			Vector2 UpwardVelocity = Velocity;
 			UpwardVelocity.Y -= JumpImpulse;
 			Velocity = UpwardVelocity;
 		}
 	}
 
-	// NOTE: jumping animation is weird. jumping straight up plays the
-	// animation correctly but moving left/right will trigger the run animation instead...
-	private void PlayerAnimation() {
+	// TODO: stop playing jump-roll animation after a certain amount of time
+	private void PlayAnimation() {
+		// being airborne has GREATEST priority
+		bool IsMoving = Math.Abs(Velocity.X) > 0;
+
+		if (!IsOnFloor()) {
+			CurrentAnimationState = AnimationState.Jump;
+		} else {
+			if (IsMoving)
+				CurrentAnimationState = AnimationState.Run;
+			else
+				CurrentAnimationState = AnimationState.Idle;
+		}
+
 		switch (CurrentAnimationState) {
-			case AnimationState.Idle:
+			case AnimationState.Idle: {
 				Sprite.Play("idle");
-				break;
-			case AnimationState.Run:
+			}
+			break;
+			case AnimationState.Run: {
+				Sprite.FlipH = Velocity.X < 0 ? true : false;
 				Sprite.Play("run");
-				break;
-			case AnimationState.Jump:
+			}
+			break;
+			case AnimationState.Jump: {
+				if (IsMoving)
+					Sprite.FlipH = Velocity.X < 0 ? true : false;
 				Sprite.Play("jump");
-				break;
+			}
+			break;
 		}
 	}
 }
