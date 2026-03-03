@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="2d-metroidvania"
-run/main_scene="uid://bmlmskqadm3m8"
+run/main_scene="uid://be1tpkcnj0asj"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
