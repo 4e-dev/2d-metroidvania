@@ -6,7 +6,7 @@ public partial class Player : CharacterBody2D
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
 	[Export] public float Gravity = 1000f;
 	[Export] public float JumpImpulse = 350f;
-	[Export] public float Speed = 300f;
+	[Export] public float Speed = 250f;
 
 	private enum AnimationState {
 		Cling,
