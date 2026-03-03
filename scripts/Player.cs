@@ -5,8 +5,8 @@ public partial class Player : CharacterBody2D
 {
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
 	[Export] public float Gravity = 1000f;
-	[Export] public float JumpImpulse = 350f;
-	[Export] public float Speed = 250f;
+	[Export] public float JumpImpulse = 16000;
+	[Export] public float Speed = 12000;
 
 	private enum AnimationState {
 		Cling,
@@ -29,8 +29,8 @@ public partial class Player : CharacterBody2D
 		float dt = (float)delta;
 
 		PhysicsFalling(dt);
-		PhysicsRun();
-		PhysicsJump();
+		PhysicsRun(dt);
+		PhysicsJump(dt);
 
 		MoveAndSlide();
 
@@ -45,21 +45,21 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void PhysicsRun() {
+	private void PhysicsRun(float delta) {
 		float HorizontalDirection = Input.GetAxis("move_left", "move_right");
 		Vector2 HorizontalVelocity = Velocity;
 		if (HorizontalDirection != 0) {
-			HorizontalVelocity.X = HorizontalDirection * Speed;
+			HorizontalVelocity.X = HorizontalDirection * Speed * delta;
 		} else {
 			HorizontalVelocity.X = 0;
 		}
 		Velocity = HorizontalVelocity;
 	}
 
-	private void PhysicsJump() {
-		if (Input.IsActionJustPressed("jump")) {
+	private void PhysicsJump(float delta) {
+		if (IsOnFloor() && Input.IsActionJustPressed("jump")) {
 			Vector2 UpwardVelocity = Velocity;
-			UpwardVelocity.Y -= JumpImpulse;
+			UpwardVelocity.Y -= JumpImpulse * delta;
 			Velocity = UpwardVelocity;
 		}
 	}
