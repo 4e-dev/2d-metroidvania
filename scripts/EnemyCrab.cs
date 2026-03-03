@@ -4,9 +4,6 @@ using System.Linq;
 
 public partial class EnemyCrab : CharacterBody2D
 {
-    // TODO: create an enemy patrol point
-    // this function will assume that there are exactly TWO Marker2D nodes
-
     [Export] public float Gravity = 1000f;
     [Export] public Node2D PatrolPoints { get; set; }
     [Export] public int Speed = 3000;
@@ -17,27 +14,48 @@ public partial class EnemyCrab : CharacterBody2D
         Idle,
         Walk
     }
-    private AnimationState CurrentAnimationState;
-    private int NumberOfPoints;
-    private Godot.Collections.Array<Vector2> PointPositions;
-    private Vector2 TargetMarker; // the point that the enemy is currently traveling towards
-    private int TargetMarkerIndex;
-    private Vector2 Direction;
+    private AnimationState _animationState;
+    private int _numberOfPoints;
+    private int _targetPointPositionIndex = 0;
+    private Godot.Collections.Array<Vector2> _pointPositions;
+    private Vector2 _targetPointPosition;
+    private Vector2 _crabWalkingDirection;
+
+    private Timer _waitAtPatrolPoint;
+    private bool _isWaiting = false;
 
     public override void _Ready()
     {
+        // default animation state
+        _animationState = AnimationState.Idle;
+
+        // setting up enemy patrol points
         if (PatrolPoints == null)
         {
             GD.Print("ERROR - Enemy has no patrol points. Make sure it's assigned via level inspector!");
             return;
+        } 
+
+        _pointPositions = new Godot.Collections.Array<Vector2>();
+        Godot.Collections.Array<Node> PatrolPointChildren = PatrolPoints.GetChildren();
+        _numberOfPoints = PatrolPointChildren.Count;
+
+        for (int i = 0; i < _numberOfPoints; ++i)
+        {
+            Node2D Point = (Node2D)PatrolPointChildren[i];
+            _pointPositions.Add(Point.GlobalPosition);
         }
-        PointPositions = new Godot.Collections.Array<Vector2>();
-        CurrentAnimationState = AnimationState.Idle;
-        NumberOfPoints = PatrolPoints.GetChildren().Count; // NOTE: unused
-        foreach (Node2D Point in PatrolPoints.GetChildren().Cast<Node2D>())
-            PointPositions.Add(Point.GlobalPosition);
-        TargetMarker = PointPositions[TargetMarkerIndex];
-        Direction = Vector2.Left;
+
+        // set default target marker and walking direction
+        _targetPointPosition = _pointPositions[0];
+        _crabWalkingDirection = Vector2.Left; // arbitrary - maybe randomize this?
+
+        // wait logic with Timer node
+        _waitAtPatrolPoint = GetNode<Timer>("WaitAtPatrolPoint");
+        _waitAtPatrolPoint.SetOneShot(true);
+
+        // connect timeout signal
+        _waitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -64,22 +82,31 @@ public partial class EnemyCrab : CharacterBody2D
 
     private void CrabWalking(float delta)
     {
-        const double MinPatrolDistance = 0.5;
-        double Distance = Math.Abs(Position.X - TargetMarker.X);
+        // crab must wait after reaching a patrol point
+        if (_isWaiting)
+            return;
 
-        if (Distance > MinPatrolDistance)
+        double Distance = Math.Abs(Position.X - _targetPointPosition.X);
+        bool CrabReachedPatrolPoint = Distance < 0.5;
+
+        if (CrabReachedPatrolPoint)
         {
-            Vector2 TargetVelocity = Velocity;
-            TargetVelocity.X = Direction.X * Speed * delta;
-            Velocity = TargetVelocity;
+            Velocity = Vector2.Zero;
+            _isWaiting = true;
+            _targetPointPositionIndex = (_targetPointPositionIndex + 1) % _numberOfPoints;
+
+            // start timer
+            float WaitTime = 2f;
+            _waitAtPatrolPoint.Start(WaitTime);
         }
         else
         {  
-            // crab has gone past the target patrol point
-            TargetMarkerIndex = (TargetMarkerIndex + 1) % NumberOfPoints;
+            Vector2 TargetVelocity = Velocity;
+            TargetVelocity.X = _crabWalkingDirection.X * Speed * delta;
+            Velocity = TargetVelocity;
         }
-        TargetMarker = PointPositions[TargetMarkerIndex];
-        Direction = TargetMarker.X > Position.X ? Vector2.Right ; Vector2.Left;
+        _targetPointPosition = _pointPositions[_targetPointPositionIndex];
+        _crabWalkingDirection = _targetPointPosition.X > Position.X ? Vector2.Right : Vector2.Left;
     }
 
     private void PlayAnimation()
@@ -95,14 +122,14 @@ public partial class EnemyCrab : CharacterBody2D
         if (IsMoving)
         {
             Sprite.FlipH = Velocity.X > 0;
-            CurrentAnimationState = AnimationState.Walk;
+            _animationState = AnimationState.Walk;
         }
         else
         {
-            CurrentAnimationState = AnimationState.Idle;
+            _animationState = AnimationState.Idle;
         }
 
-        switch (CurrentAnimationState)
+        switch (_animationState)
         {
             case AnimationState.Idle:
             {
@@ -115,5 +142,9 @@ public partial class EnemyCrab : CharacterBody2D
             }
             break;
         }
+    }
+
+    private void OnWaitAtPatrolPointTimeout() {
+        _isWaiting = false;
     }
 }
