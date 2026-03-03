@@ -74,15 +74,12 @@ public partial class EnemyCrab : CharacterBody2D
             Velocity = TargetVelocity;
         }
         else
-        {
-            TargetMarkerIndex = (TargetMarkerIndex + 1) % 2;
+        {  
+            // crab has gone past the target patrol point
+            TargetMarkerIndex = (TargetMarkerIndex + 1) % NumberOfPoints;
         }
         TargetMarker = PointPositions[TargetMarkerIndex];
-
-        if (TargetMarker.X > Position.X)
-            Direction = Vector2.Right;
-        else
-            Direction = Vector2.Left;
+        Direction = TargetMarker.X > Position.X ? Vector2.Right ; Vector2.Left;
     }
 
     private void PlayAnimation()
