@@ -90,3 +90,5 @@ frame_progress = 0.721278
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
 position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_my6b7")
+
+[node name="WaitAtPatrolPoint" type="Timer" parent="." unique_id=1678722298]
