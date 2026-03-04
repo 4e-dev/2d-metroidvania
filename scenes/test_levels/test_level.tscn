@@ -25,4 +25,4 @@ position = Vector2(-128, 75)
 position = Vector2(215, 73)
 
 [node name="ParallaxBackground" parent="." index="3" unique_id=1006824817 instance=ExtResource("3_2ynvi")]
-position = Vector2(0, -27)
+position = Vector2(0, -110)

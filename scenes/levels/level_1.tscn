@@ -1,5 +1,8 @@
 [gd_scene format=3 uid="uid://cxmd7gw8lc57u"]
 
 [ext_resource type="PackedScene" uid="uid://bmlmskqadm3m8" path="res://scenes/base_level.tscn" id="1_ksju7"]
+[ext_resource type="PackedScene" uid="uid://bkit8bwi5cmpr" path="res://scenes/parallax_background.tscn" id="2_6iamk"]
 
 [node name="BaseLevel" unique_id=2146417796 instance=ExtResource("1_ksju7")]
+
+[node name="ParallaxBackground" parent="." index="2" unique_id=1006824817 instance=ExtResource("2_6iamk")]
