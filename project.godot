@@ -15,6 +15,10 @@ run/main_scene="uid://be1tpkcnj0asj"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameManager="*uid://c4iddai4v31mq"
+
 [display]
 
 window/size/viewport_width=384
@@ -58,4 +62,3 @@ jump={
 
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
-environment/defaults/default_clear_color=Color(0.44705883, 0.12941177, 0.53333336, 1)
