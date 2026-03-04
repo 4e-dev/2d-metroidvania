@@ -120,6 +120,6 @@ sources/0 = SubResource("TileSetAtlasSource_w7c3h")
 tile_set = SubResource("TileSet_w8frs")
 
 [node name="Player" parent="." unique_id=1212199937 instance=ExtResource("2_0n1tn")]
-position = Vector2(36, -70)
 
 [node name="Camera2D" type="Camera2D" parent="Player" unique_id=1542786777]
+position = Vector2(0, -44)
