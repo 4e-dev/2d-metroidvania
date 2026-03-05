@@ -6,7 +6,7 @@ public partial class Player : CharacterBody2D
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
 	[Export] public int Gravity = 1000;
 
-	[Export] public int JumpImpulse = 350;
+	[Export] public int JumpImpulse = 390; // clears about 5 blocks
 	[Export] public int Speed = 15000;
 
     private float _coyoteBuffer = 0.15f; // NOTE: feels pretty good, not too forgiving
