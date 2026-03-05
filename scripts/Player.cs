@@ -3,9 +3,14 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
+    // TODO: implement a coyote timer when leaving a platform
+    // TODO: look into "jump buffering" - auto-store jump input when a player presses jump
+        // slightly *before* landing
+
+
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
 	[Export] public float Gravity = 1000f;
-	[Export] public float JumpImpulse = 16000;
+	[Export] public float JumpImpulse = 18000; // can jump 3 blocks tall/player height and 8 blocks across (exclusive/empty space only)
 	[Export] public float Speed = 12000;
 
 	private enum AnimationState {
