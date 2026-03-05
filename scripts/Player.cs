@@ -6,7 +6,7 @@ public partial class Player : CharacterBody2D
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
 	[Export] public int Gravity = 1000;
 
-	[Export] public int JumpImpulse = 390; // clears about 5 blocks
+	[Export] public int JumpImpulse = 405; // clears about 5 blocks
 	[Export] public int Speed = 15000;
 
     private float _coyoteBuffer = 0.15f; // NOTE: feels pretty good, not too forgiving
@@ -64,8 +64,8 @@ public partial class Player : CharacterBody2D
 		Velocity = HorizontalVelocity;
 	}
 
-	private void PhysicsJump(float delta)
-    {
+    // TODO: code an option for long/short jumps based on how long 'W' is held for
+	private void PhysicsJump(float delta) {
         // coyote timer
         if (IsOnFloor())
             _coyoteTimer = _coyoteBuffer;
@@ -79,8 +79,7 @@ public partial class Player : CharacterBody2D
             _prematureJumpTimer -= delta;
 
         bool AllowedToJump = _coyoteTimer > 0f && _prematureJumpTimer > 0f;
-        if (AllowedToJump)
-        {
+        if (AllowedToJump) {
             Velocity = new Vector2(Velocity.X, -JumpImpulse);
             _coyoteTimer = 0f;
             _prematureJumpTimer = 0f;
