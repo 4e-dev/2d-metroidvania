@@ -207,7 +207,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle",
-"speed": 10.0
+"speed": 6.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -337,9 +337,9 @@ Sprite = NodePath("AnimatedSprite2D")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1384598952]
 position = Vector2(0, -24)
 sprite_frames = SubResource("SpriteFrames_tuyoq")
-animation = &"duck"
+animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.5761647
+frame_progress = 0.4695914
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1033565435]
 position = Vector2(0, -20)
