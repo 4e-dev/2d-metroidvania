@@ -4,12 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://5a6hn4bxa41d" path="res://assets/PNG/environment/layers/middleground.png" id="2_r7lvs"]
 
 [node name="ParallaxBackground" type="Node2D" unique_id=1006824817]
+z_index = -10
 
 [node name="BackgroundParallax2D" type="Parallax2D" parent="." unique_id=1224480385]
 z_index = -2
 scroll_scale = Vector2(0.6, 1)
 repeat_size = Vector2(360, 0)
-repeat_times = 8
+repeat_times = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="BackgroundParallax2D" unique_id=1770290724]
 position = Vector2(0, -149)
@@ -21,7 +22,7 @@ centered = false
 z_index = -1
 scroll_scale = Vector2(0.8, 1)
 repeat_size = Vector2(408, 0)
-repeat_times = 8
+repeat_times = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="MiddlegroundParallax2D" unique_id=1489155559]
 position = Vector2(0, -149)
