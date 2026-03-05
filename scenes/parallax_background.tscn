@@ -8,24 +8,24 @@ z_index = -10
 
 [node name="BackgroundParallax2D" type="Parallax2D" parent="." unique_id=1224480385]
 z_index = -2
-scroll_scale = Vector2(0.6, 1)
-repeat_size = Vector2(360, 0)
+scroll_scale = Vector2(0.7, 1)
+repeat_size = Vector2(480, 352)
 repeat_times = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="BackgroundParallax2D" unique_id=1770290724]
 position = Vector2(0, -149)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(2, 2)
 texture = ExtResource("1_yqcdc")
 centered = false
 
 [node name="MiddlegroundParallax2D" type="Parallax2D" parent="." unique_id=306920377]
 z_index = -1
 scroll_scale = Vector2(0.8, 1)
-repeat_size = Vector2(408, 0)
+repeat_size = Vector2(544, 352)
 repeat_times = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="MiddlegroundParallax2D" unique_id=1489155559]
 position = Vector2(0, -149)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(2, 2)
 texture = ExtResource("2_r7lvs")
 centered = false
