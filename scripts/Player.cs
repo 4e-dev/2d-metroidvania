@@ -3,15 +3,17 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
-    // TODO: implement a coyote timer when leaving a platform
-    // TODO: look into "jump buffering" - auto-store jump input when a player presses jump
-        // slightly *before* landing
-
-
 	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
-	[Export] public float Gravity = 1000f;
-	[Export] public float JumpImpulse = 18000; // can jump 3 blocks tall/player height and 8 blocks across (exclusive/empty space only)
-	[Export] public float Speed = 12000;
+	[Export] public int Gravity = 1000;
+
+	[Export] public int JumpImpulse = 350;
+	[Export] public int Speed = 15000;
+
+    private float _coyoteBuffer = 0.15f; // NOTE: feels pretty good, not too forgiving
+    private float _coyoteTimer = 0f;
+
+    private float _prematureJumpBuffer = 0.15f;
+    private float _prematureJumpTimer = 0f;
 
 	private enum AnimationState {
 		Cling,
@@ -24,10 +26,10 @@ public partial class Player : CharacterBody2D
 		ShootUp,
 		Stand
 	}
-	private AnimationState CurrentAnimationState;
+	private AnimationState _animationState;
 
 	public override void _Ready() {
-		CurrentAnimationState = AnimationState.Idle;
+		_animationState = AnimationState.Idle;
 	}
 
 	public override void _PhysicsProcess(double delta) {
@@ -43,11 +45,12 @@ public partial class Player : CharacterBody2D
 	}
 
 	private void PhysicsFalling(float delta) {
-		if (!IsOnFloor()) {
-			Vector2 DownwardVelocity = Velocity;
-			DownwardVelocity.Y += Gravity * delta;
-			Velocity = DownwardVelocity;
-		}
+        if (IsOnFloor()) {
+            _coyoteTimer = _coyoteBuffer;
+        } else {
+            Velocity = new Vector2(Velocity.X, Velocity.Y + (Gravity * delta));
+            _coyoteTimer -= delta;
+        }
 	}
 
 	private void PhysicsRun(float delta) {
@@ -61,29 +64,43 @@ public partial class Player : CharacterBody2D
 		Velocity = HorizontalVelocity;
 	}
 
-	private void PhysicsJump(float delta) {
-		if (IsOnFloor() && Input.IsActionJustPressed("jump")) {
-			Vector2 UpwardVelocity = Velocity;
-			UpwardVelocity.Y -= JumpImpulse * delta;
-			Velocity = UpwardVelocity;
-		}
+	private void PhysicsJump(float delta)
+    {
+        // coyote timer
+        if (IsOnFloor())
+            _coyoteTimer = _coyoteBuffer;
+        else
+            _coyoteTimer -= delta;
+
+        // premature jump buffer
+        if (Input.IsActionJustPressed("jump"))
+            _prematureJumpTimer = _prematureJumpBuffer;
+        else
+            _prematureJumpTimer -= delta;
+
+        bool AllowedToJump = _coyoteTimer > 0f && _prematureJumpTimer > 0f;
+        if (AllowedToJump)
+        {
+            Velocity = new Vector2(Velocity.X, -JumpImpulse);
+            _coyoteTimer = 0f;
+            _prematureJumpTimer = 0f;
+        }
 	}
 
-	// TODO: stop playing jump-roll animation after a certain amount of time
 	private void PlayAnimation() {
 		// being airborne has GREATEST priority
 		bool IsMoving = Math.Abs(Velocity.X) > 0;
 
-		if (!IsOnFloor()) {
-			CurrentAnimationState = AnimationState.Jump;
-		} else {
+		if (IsOnFloor()) {
 			if (IsMoving)
-				CurrentAnimationState = AnimationState.Run;
+				_animationState = AnimationState.Run;
 			else
-				CurrentAnimationState = AnimationState.Idle;
+				_animationState = AnimationState.Idle;
+		} else {
+			_animationState = AnimationState.Jump;
 		}
 
-		switch (CurrentAnimationState) {
+		switch (_animationState) {
 			case AnimationState.Idle: {
 				Sprite.Play("idle");
 			}
