@@ -70,7 +70,7 @@ public partial class Player : CharacterBody2D
         else
             _coyoteTimer -= delta;
 
-        if (Input.IsActionPressed("jump"))
+        if (Input.IsActionJustPressed("jump"))
             _prematureJumpTimer = _prematureJumpBuffer;
         else
             _prematureJumpTimer -= delta;
