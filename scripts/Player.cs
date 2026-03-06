@@ -64,16 +64,13 @@ public partial class Player : CharacterBody2D
 		Velocity = HorizontalVelocity;
 	}
 
-    // TODO: code an option for long/short jumps based on how long 'W' is held for
 	private void PhysicsJump(float delta) {
-        // coyote timer
         if (IsOnFloor())
             _coyoteTimer = _coyoteBuffer;
         else
             _coyoteTimer -= delta;
 
-        // premature jump buffer
-        if (Input.IsActionJustPressed("jump"))
+        if (Input.IsActionPressed("jump"))
             _prematureJumpTimer = _prematureJumpBuffer;
         else
             _prematureJumpTimer -= delta;
@@ -81,8 +78,16 @@ public partial class Player : CharacterBody2D
         bool AllowedToJump = _coyoteTimer > 0f && _prematureJumpTimer > 0f;
         if (AllowedToJump) {
             Velocity = new Vector2(Velocity.X, -JumpImpulse);
+
+            // reset
             _coyoteTimer = 0f;
             _prematureJumpTimer = 0f;
+        }
+
+        bool QuickJumpRelease = Input.IsActionJustReleased("jump") && Velocity.Y < 0;
+        if (QuickJumpRelease) {
+            float ShortenedJumpImpulse = Velocity.Y * 0.5f;
+            Velocity = new Vector2(Velocity.X, ShortenedJumpImpulse);
         }
 	}
 
