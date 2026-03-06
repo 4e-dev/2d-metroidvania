@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://lhhuq605ev3o"]
+
+[ext_resource type="Texture2D" uid="uid://487kvl5t1jnk" path="res://assets/PNG/spritesheets/Fx/shot.png" id="1_nulm2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ph4n4"]
+atlas = ExtResource("1_nulm2")
+region = Rect2(0, 0, 6, 4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmxs6"]
+atlas = ExtResource("1_nulm2")
+region = Rect2(6, 0, 6, 4)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ch4pt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ph4n4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmxs6")
+}],
+"loop": true,
+"name": &"shot",
+"speed": 10.0
+}]
+
+[node name="AnimatedBullet" type="AnimatedSprite2D" unique_id=1656225123]
+sprite_frames = SubResource("SpriteFrames_ch4pt")
+animation = &"shot"
+frame_progress = 0.63142514
