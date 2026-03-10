@@ -1,17 +1,20 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Player : CharacterBody2D
 {
-	[Export] public AnimatedSprite2D Sprite { get; set; } // set via inspector
+	[Export] public AnimatedSprite2D Sprite { get; set; }
 	[Export] public int Gravity = 1000;
-
 	[Export] public int JumpImpulse = 405; // clears about 5 blocks
 	[Export] public int Speed = 15000;
 
-    private float _coyoteBuffer = 0.15f; // NOTE: feels pretty good, not too forgiving
+    private AnimationState _animationState;
+    private Node2D bulletsGroup;
+    private PackedScene bulletScene;
+    private float _coyoteBuffer = 0.15f;
     private float _coyoteTimer = 0f;
-
+    private float _horizontalDirection;
     private float _prematureJumpBuffer = 0.15f;
     private float _prematureJumpTimer = 0f;
 
@@ -21,50 +24,70 @@ public partial class Player : CharacterBody2D
 		Hurt,
 		Idle,
 		Jump,
-		RunShoot,
 		Run,
-		ShootUp,
-		Stand
+		RunAndShoot,
+		Shoot,
+        SentinelCount // NOT an animation state! Used to get size of AnimationState.
 	}
-	private AnimationState _animationState;
+    private string[] AnimationNameByState;
 
 	public override void _Ready() {
+        // Load scenes & nodes.
+        bulletsGroup = GetNode<Node2D>("Bullets");
+        System.Diagnostics.Debug.Assert(bulletsGroup != null, "ERROR - Missing required node: 'Bullets'\nMake sure it exists within the current SceneTree");
+
+        bulletScene = ResourceLoader.Load<PackedScene>("res://scenes/animated_bullet.tscn");
+        System.Diagnostics.Debug.Assert(bulletScene != null, "ERROR - Unable to load the following scene: 'bullet'");
+
+        // Default to idle.
 		_animationState = AnimationState.Idle;
+
+        // Update the name of the animations here in the event that they are changed, for whatever reason...
+        // [(int)AnimationState...] allows adding enums without silently breakign something.
+        AnimationNameByState = new string[(int)AnimationState.SentinelCount];
+        AnimationNameByState[(int)AnimationState.Cling]         = "cling";
+        AnimationNameByState[(int)AnimationState.Duck]          = "duck";
+        AnimationNameByState[(int)AnimationState.Hurt]          = "hurt";
+        AnimationNameByState[(int)AnimationState.Idle]          = "idle";
+        AnimationNameByState[(int)AnimationState.Jump]          = "jump";
+        AnimationNameByState[(int)AnimationState.Run]           = "run";
+        AnimationNameByState[(int)AnimationState.RunAndShoot]   = "run_and_shoot";
+        AnimationNameByState[(int)AnimationState.Shoot]         = "shoot";
 	}
 
 	public override void _PhysicsProcess(double delta) {
-		float dt = (float)delta;
+		_horizontalDirection = Input.GetAxis("move_left", "move_right");
 
-		PhysicsFalling(dt);
-		PhysicsRun(dt);
-		PhysicsJump(dt);
+        // Physics related processes
+        float dt = (float)delta;
+		PlayerFall(dt);
+		PlayerRun(dt);
+		PlayerJump(dt);
+        PlayerShoot(dt);
 
 		MoveAndSlide();
 
+        // Animation must be played *AFTER* physics related processes!
 		PlayAnimation();
 	}
 
-	private void PhysicsFalling(float delta) {
-        if (IsOnFloor()) {
-            _coyoteTimer = _coyoteBuffer;
-        } else {
-            Velocity = new Vector2(Velocity.X, Velocity.Y + (Gravity * delta));
-            _coyoteTimer -= delta;
+	public void PlayerFall(float delta) {
+        if (!IsOnFloor()) {
+            float Down = Velocity.Y + (Gravity * delta);
+            Velocity = new Vector2(Velocity.X, Down);
         }
 	}
 
-	private void PhysicsRun(float delta) {
-		float HorizontalDirection = Input.GetAxis("move_left", "move_right");
-		Vector2 HorizontalVelocity = Velocity;
-		if (HorizontalDirection != 0) {
-			HorizontalVelocity.X = HorizontalDirection * Speed * delta;
-		} else {
-			HorizontalVelocity.X = 0;
-		}
-		Velocity = HorizontalVelocity;
+	public void PlayerRun(float delta) {
+        float HorizontalVelocity;
+        if (ApproximatelyZero(_horizontalDirection))
+            HorizontalVelocity = 0;
+        else
+            HorizontalVelocity = _horizontalDirection * Speed * delta;
+        Velocity = new Vector2(HorizontalVelocity, Velocity.Y);
 	}
 
-	private void PhysicsJump(float delta) {
+	public void PlayerJump(float delta) {
         if (IsOnFloor())
             _coyoteTimer = _coyoteBuffer;
         else
@@ -86,40 +109,53 @@ public partial class Player : CharacterBody2D
 
         bool QuickJumpRelease = Input.IsActionJustReleased("jump") && Velocity.Y < 0;
         if (QuickJumpRelease) {
-            float ShortenedJumpImpulse = Velocity.Y * 0.5f;
-            Velocity = new Vector2(Velocity.X, ShortenedJumpImpulse);
+            //float ReducedJumpImpulse = Velocity.Y * 0.5f;
+            float ReducedJumpImpulse = JumpImpulse * 0.5f;
+            Velocity = new Vector2(Velocity.X, -ReducedJumpImpulse);
         }
 	}
 
-	private void PlayAnimation() {
-		// being airborne has GREATEST priority
-		bool IsMoving = Math.Abs(Velocity.X) > 0;
+    // TODO: program player shooting animation and spawn AnimatedBullet
+    public void PlayerShoot(float delta) {
+        if (Input.IsActionPressed("shoot")) {
+            if (bulletScene == null) {
+                GD.Print("ERROR - AnimatedBullet scene not instantiated");
+                return;
+            }
 
-		if (IsOnFloor()) {
-			if (IsMoving)
-				_animationState = AnimationState.Run;
-			else
-				_animationState = AnimationState.Idle;
-		} else {
+            AnimatedSprite2D BulletInstance = bulletScene.Instantiate<AnimatedSprite2D>();
+            bulletsGroup.AddChild(BulletInstance);
+
+            // TODO: apply velocity to bullet and make it disappear when it hits anything with collision or goes off screen
+
+        }
+    }
+
+	public void PlayAnimation() {
+        bool Moving = !ApproximatelyZero(_horizontalDirection);
+
+        // Determine animation state
+        if (!IsOnFloor()) { // Being airborne has the GREATEST priority.
 			_animationState = AnimationState.Jump;
-		}
+        } else {
+            if (Moving)
+                _animationState = AnimationState.Run;
+            else
+                _animationState = AnimationState.Idle;
+        }
+        if (Input.IsActionPressed("shoot")) {
+            if (Moving)
+                _animationState = AnimationState.RunAndShoot;
+            else
+                _animationState = AnimationState.Shoot;
+        }
+        if (Moving) Sprite.FlipH = _horizontalDirection < 0;
 
-		switch (_animationState) {
-			case AnimationState.Idle: {
-				Sprite.Play("idle");
-			}
-			break;
-			case AnimationState.Run: {
-				Sprite.FlipH = Velocity.X < 0;
-				Sprite.Play("run");
-			}
-			break;
-			case AnimationState.Jump: {
-				if (IsMoving)
-					Sprite.FlipH = Velocity.X < 0;
-				Sprite.Play("jump");
-			}
-			break;
-		}
+        Sprite.Play(AnimationNameByState[(int)_animationState]);
 	}
+
+    private bool ApproximatelyZero(float value) {
+        const float EPSILON = 1e-6f;
+        return MathF.Abs(value) < EPSILON;
+    }
 }
