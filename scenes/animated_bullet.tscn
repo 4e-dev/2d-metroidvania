@@ -27,4 +27,4 @@ animations = [{
 [node name="AnimatedBullet" type="AnimatedSprite2D" unique_id=1656225123]
 sprite_frames = SubResource("SpriteFrames_ch4pt")
 animation = &"shot"
-frame_progress = 0.63142514
+frame_progress = 0.2980773
