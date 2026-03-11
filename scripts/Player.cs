@@ -162,7 +162,12 @@ public partial class Player : CharacterBody2D {
             if (Input.IsActionPressed("shoot"))
                 CurrentAnimationState = AnimationState.RunAndShoot;
             else
+                CurrentAnimationState = AnimationState.Run;
+        } else {
+            if (Input.IsActionPressed("shoot"))
                 CurrentAnimationState = AnimationState.Shoot;
+            else
+                CurrentAnimationState = AnimationState.Idle;
         }
 
         Sprite.FlipH = LookingAt == Direction.Left;
