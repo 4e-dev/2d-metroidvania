@@ -22,7 +22,6 @@ public partial class Player : CharacterBody2D {
         Right,
         Up,
         Down,
-        Count
     };
     private Direction LookingAt;
 
@@ -122,13 +121,8 @@ public partial class Player : CharacterBody2D {
     }
 
     private void PlayerShoot(float delta) {
-        if (Input.IsActionPressed("shoot")) {
-            if (BulletScene == null) {
-                GD.Print("ERROR - AnimatedBullet scene not instantiated");
-                return;
-            }
-
-            Area2D Bullet = BulletScene.Instantiate<Area2D>();
+        if (Input.IsActionJustPressed("shoot")) {
+            Bullet Bullet = BulletScene.Instantiate<Bullet>();
             Bullet.GlobalPosition = BulletSpawner.GlobalPosition;
 
             // Flip the bullet around depending on LookingAt
@@ -138,7 +132,17 @@ public partial class Player : CharacterBody2D {
                 Bullet.GlobalPosition = new Vector2(FlippedX, Bullet.GlobalPosition.Y);
             }
 
+            Vector2 BulletDirection = LookingAt switch {
+                Direction.Left  => Vector2.Left,
+                Direction.Right => Vector2.Right,
+                Direction.Up    => Vector2.Up,
+                Direction.Down  => Vector2.Down
+            };
+            Bullet.SetDirection(BulletDirection);
             Bullets.AddChild(Bullet);
+
+            // Player velocity affects bullet velocity (just like real life, right?)
+            Bullet.SetPlayerVelocity(Velocity);
         }
     }
 

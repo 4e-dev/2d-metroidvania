@@ -2,21 +2,38 @@ using Godot;
 using System;
 using System.Diagnostics; // for Debug.Assert
 
-public partial class Bullet : Area2D {
-    // TODO: Bullet's position must come out of player's gun
-    // * How can we get the position of the player here?
-    //      * Perhaps I need to pass it in from Player.cs?
-    //      * Recall that each bullet is grouped into the Player's "Bullets" subgroup node.
+// TODO: Add an animation for hitting a collision shape (enemy, wall)
+// TODO: Create an Enemy group... might be useful for later
 
-    [Export] public int BulletSpeed = 1000;
+public partial class Bullet : Area2D {
+    [Export] private int Speed = 500;
+    private Vector2 Direction;
+    private Vector2 PlayerVelocity;
 
     public override void _Ready() {
-
+        SetMonitorable(true);
+        SetMonitoring(true);
+        BodyEntered += OnBodyEntered;
     }
 
     public override void _PhysicsProcess(double delta) {
-        // TODO: Give the bullet some velocity and direction.
-        // TODO: When the bullet hits a collision shape, play the correct animation then 
-        //      despawn the bullet.
+        Position += Direction * (Speed + MathF.Abs(PlayerVelocity.X)) * (float)delta;
+    }
+
+    public void SetDirection(Vector2 _Direction) {
+        Direction = _Direction.Normalized();
+    }
+
+    public void SetPlayerVelocity(Vector2 _PlayerVelocity) {
+        PlayerVelocity = _PlayerVelocity;
+    }
+
+    private string MissingNodeMessage(string Node) {
+        return $"Missing required node: {Node}\nEnsure it exists within the current SceneTree";
+    }
+
+    // For signals
+    private void OnBodyEntered(Node2D Body) {
+        QueueFree();
     }
 }
