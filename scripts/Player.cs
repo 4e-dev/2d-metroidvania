@@ -17,6 +17,15 @@ public partial class Player : CharacterBody2D {
     private readonly float CoyoteBuffer = .05f;
     private readonly string BulletScenePath = "res://scenes/bullet.tscn";
 
+    private enum Direction {
+        Left,
+        Right,
+        Up,
+        Down,
+        Count
+    };
+    private Direction LookingAt;
+
     private enum AnimationState {
         Cling,
         Duck,
@@ -40,6 +49,7 @@ public partial class Player : CharacterBody2D {
         Debug.Assert(BulletSpawner != null, MissingNodeMessage("BulletSpawner"));
 
         CurrentAnimationState = AnimationState.Idle;
+        LookingAt = Direction.Right;
 
         AnimationNameByState = new string[(int)AnimationState.SentinelCount];
         AnimationNameByState[(int)AnimationState.Cling]         = "cling";
@@ -117,32 +127,45 @@ public partial class Player : CharacterBody2D {
                 GD.Print("ERROR - AnimatedBullet scene not instantiated");
                 return;
             }
+
             Area2D Bullet = BulletScene.Instantiate<Area2D>();
             Bullet.GlobalPosition = BulletSpawner.GlobalPosition;
+
+            // Flip the bullet around depending on LookingAt
+            if (LookingAt == Direction.Left) {
+                float RelativeXPosition = BulletSpawner.Position.X;
+                float FlippedX = Bullet.GlobalPosition.X - (2 * RelativeXPosition);
+                Bullet.GlobalPosition = new Vector2(FlippedX, Bullet.GlobalPosition.Y);
+            }
+
             Bullets.AddChild(Bullet);
         }
     }
 
     private void PlayAnimation() {
-        bool Moving = !ApproximatelyZero(HorizontalDirection);
+        // Determine LookingAt direction.
+        bool Moving = false;
 
-        // Determine animation state
-        if (!IsOnFloor()) { // Being airborne has the GREATEST priority.
-            CurrentAnimationState = AnimationState.Jump;
-        } else {
-            if (Moving)
-                CurrentAnimationState = AnimationState.Run;
-            else
-                CurrentAnimationState = AnimationState.Idle;
+        if (Input.IsActionPressed("move_left")) {
+            LookingAt = Direction.Left;
+            Moving = true;
         }
-        if (Input.IsActionPressed("shoot")) {
-            if (Moving)
+        if (Input.IsActionPressed("move_right")) {
+            LookingAt = Direction.Right;
+            Moving = true;
+        }
+
+        // Determine CurrentAnimationState
+        if (Input.IsActionPressed("jump") || !IsOnFloor()) {
+            CurrentAnimationState = AnimationState.Jump;
+        } else if (Moving) {
+            if (Input.IsActionPressed("shoot"))
                 CurrentAnimationState = AnimationState.RunAndShoot;
             else
                 CurrentAnimationState = AnimationState.Shoot;
         }
-        if (Moving) Sprite.FlipH = HorizontalDirection < 0;
 
+        Sprite.FlipH = LookingAt == Direction.Left;
         Sprite.Play(AnimationNameByState[(int)CurrentAnimationState]);
     }
 
