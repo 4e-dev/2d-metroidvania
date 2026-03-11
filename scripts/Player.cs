@@ -14,9 +14,7 @@ public partial class Player : CharacterBody2D {
     private PackedScene BulletScene;
     private float CoyoteTimer = 0f;
     private float HorizontalDirection;
-    private float PrematureJumpTimer = 0f;
-    private readonly float CoyoteBuffer = 0.15f;
-    private readonly float PrematureJumpBuffer = 0.15f;
+    private readonly float CoyoteBuffer = .05f;
     private readonly string BulletScenePath = "res://scenes/bullet.tscn";
 
     private enum AnimationState {
