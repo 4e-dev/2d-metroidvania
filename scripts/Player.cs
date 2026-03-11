@@ -4,19 +4,21 @@ using System.Collections.Generic;
 
 public partial class Player : CharacterBody2D
 {
+    // TODO: Set all of these properties / functions private
 	[Export] public AnimatedSprite2D Sprite { get; set; }
 	[Export] public int Gravity = 1000;
 	[Export] public int JumpImpulse = 405; // clears about 5 blocks
 	[Export] public int Speed = 15000;
 
     private AnimationState _animationState;
-    private Node2D bulletsGroup;
-    private PackedScene bulletScene;
+    private Node2D bullets; // TODO: _camelCase!
+    private PackedScene bulletScene; // This one too.
     private float _coyoteBuffer = 0.15f;
     private float _coyoteTimer = 0f;
     private float _horizontalDirection;
     private float _prematureJumpBuffer = 0.15f;
     private float _prematureJumpTimer = 0f;
+    private readonly string _bulletScenePath = "res://scenes/bullet.tscn";
 
 	private enum AnimationState {
 		Cling,
@@ -33,17 +35,16 @@ public partial class Player : CharacterBody2D
 
 	public override void _Ready() {
         // Load scenes & nodes.
-        bulletsGroup = GetNode<Node2D>("Bullets");
-        System.Diagnostics.Debug.Assert(bulletsGroup != null, "ERROR - Missing required node: 'Bullets'\nMake sure it exists within the current SceneTree");
+        bullets = GetTree().CurrentScene.GetNode<Node2D>("Bullets");
+        System.Diagnostics.Debug.Assert(bullets != null, "ERROR - Missing required node: 'Bullets'\nMake sure it exists within the current SceneTree");
 
-        bulletScene = ResourceLoader.Load<PackedScene>("res://scenes/animated_bullet.tscn");
+        bulletScene = ResourceLoader.Load<PackedScene>(_bulletScenePath);
         System.Diagnostics.Debug.Assert(bulletScene != null, "ERROR - Unable to load the following scene: 'bullet'");
 
-        // Default to idle.
+        // Default to idling.
 		_animationState = AnimationState.Idle;
 
         // Update the name of the animations here in the event that they are changed, for whatever reason...
-        // [(int)AnimationState...] allows adding enums without silently breakign something.
         AnimationNameByState = new string[(int)AnimationState.SentinelCount];
         AnimationNameByState[(int)AnimationState.Cling]         = "cling";
         AnimationNameByState[(int)AnimationState.Duck]          = "duck";
@@ -124,7 +125,7 @@ public partial class Player : CharacterBody2D
             }
 
             AnimatedSprite2D BulletInstance = bulletScene.Instantiate<AnimatedSprite2D>();
-            bulletsGroup.AddChild(BulletInstance);
+            bullets.AddChild(BulletInstance);
 
             // TODO: apply velocity to bullet and make it disappear when it hits anything with collision or goes off screen
 
