@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://lhhuq605ev3o"]
 
 [ext_resource type="Texture2D" uid="uid://487kvl5t1jnk" path="res://assets/PNG/spritesheets/Fx/shot.png" id="1_nulm2"]
+[ext_resource type="Script" uid="uid://c5vfxfo0gpeka" path="res://scripts/Bullet.cs" id="1_y25gk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mkf8s"]
 atlas = ExtResource("1_nulm2")
@@ -28,10 +29,11 @@ animations = [{
 radius = 3.0
 
 [node name="Bullet" type="Area2D" unique_id=1175502075]
+script = ExtResource("1_y25gk")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=20334885]
 sprite_frames = SubResource("SpriteFrames_l5glv")
-frame_progress = 0.4008076
+frame_progress = 0.68958616
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=509590623]
 shape = SubResource("CircleShape2D_mkf8s")

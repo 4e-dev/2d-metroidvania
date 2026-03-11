@@ -30,3 +30,4 @@ limit_bottom = 89
 editor_draw_limits = true
 
 [node name="Bullets" type="Node2D" parent="." index="3" unique_id=1520162742]
+z_index = -1
