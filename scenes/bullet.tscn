@@ -2,29 +2,36 @@
 
 [ext_resource type="Texture2D" uid="uid://487kvl5t1jnk" path="res://assets/PNG/spritesheets/Fx/shot.png" id="1_nulm2"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ph4n4"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_mkf8s"]
 atlas = ExtResource("1_nulm2")
 region = Rect2(0, 0, 6, 4)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_jmxs6"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_y25gk"]
 atlas = ExtResource("1_nulm2")
 region = Rect2(6, 0, 6, 4)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_ch4pt"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_l5glv"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ph4n4")
+"texture": SubResource("AtlasTexture_mkf8s")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_jmxs6")
+"texture": SubResource("AtlasTexture_y25gk")
 }],
 "loop": true,
-"name": &"shot",
+"name": &"default",
 "speed": 10.0
 }]
 
-[node name="AnimatedBullet" type="AnimatedSprite2D" unique_id=1656225123]
-sprite_frames = SubResource("SpriteFrames_ch4pt")
-animation = &"shot"
-frame_progress = 0.2980773
+[sub_resource type="CircleShape2D" id="CircleShape2D_mkf8s"]
+radius = 3.0
+
+[node name="Bullet" type="Area2D" unique_id=1175502075]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=20334885]
+sprite_frames = SubResource("SpriteFrames_l5glv")
+frame_progress = 0.4008076
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=509590623]
+shape = SubResource("CircleShape2D_mkf8s")
