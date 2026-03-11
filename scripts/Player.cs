@@ -35,7 +35,7 @@ public partial class Player : CharacterBody2D {
         Run,
         RunAndShoot,
         Shoot,
-        SentinelCount
+        Count
     }
     private string[] AnimationNameByState;
 
@@ -51,7 +51,7 @@ public partial class Player : CharacterBody2D {
         CurrentAnimationState = AnimationState.Idle;
         LookingAt = Direction.Right;
 
-        AnimationNameByState = new string[(int)AnimationState.SentinelCount];
+        AnimationNameByState = new string[(int)AnimationState.Count];
         AnimationNameByState[(int)AnimationState.Cling]         = "cling";
         AnimationNameByState[(int)AnimationState.Duck]          = "duck";
         AnimationNameByState[(int)AnimationState.Hurt]          = "hurt";
