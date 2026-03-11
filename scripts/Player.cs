@@ -100,24 +100,24 @@ public partial class Player : CharacterBody2D {
         else
             CoyoteTimer -= delta;
 
-        if (Input.IsActionJustPressed("jump"))
-            PrematureJumpTimer = PrematureJumpBuffer;
-        else
-            PrematureJumpTimer -= delta;
+        bool Jump = Input.IsActionJustPressed("jump");
+        bool Released = Input.IsActionJustReleased("jump");
 
-        bool AllowedToJump = CoyoteTimer > 0f && PrematureJumpTimer > 0f;
-        if (AllowedToJump) {
-            Velocity = new Vector2(Velocity.X, -JumpImpulse);
-
-            // reset
-            CoyoteTimer = 0f;
-            PrematureJumpTimer = 0f;
+        if (IsOnFloor()) {
+            if (Jump) {
+                Velocity = new Vector2(Velocity.X, -JumpImpulse);
+            }
         }
-
-        bool QuickJumpRelease = Input.IsActionJustReleased("jump") && Velocity.Y < 0;
-        if (QuickJumpRelease) {
-            float ReducedJumpImpulse = JumpImpulse * 0.5f;
-            Velocity = new Vector2(Velocity.X, -ReducedJumpImpulse);
+        else {
+            bool MidJump = Velocity.Y < 0;
+            if (MidJump && Released) {
+                float CutOffVelocity = Velocity.Y * 0.5f;
+                Velocity = new Vector2(Velocity.X, CutOffVelocity);
+            }
+            else if (Jump && CoyoteTimer > 0f) {
+                Velocity = new Vector2(Velocity.X, -JumpImpulse);
+                CoyoteTimer = 0f;
+            }
         }
     }
 
