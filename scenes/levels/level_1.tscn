@@ -19,7 +19,10 @@ tile_map_data = PackedByteArray("AAD1////AAADAAYAAAD1/wAAAAADAAcAAAD2////AAAEAAY
 [node name="ParallaxBackground" parent="." index="1" unique_id=1006824817 instance=ExtResource("2_6iamk")]
 position = Vector2(0, -91)
 
-[node name="Camera2D" parent="Player" parent_id_path=PackedInt32Array(1212199937) index="2" unique_id=1542786777]
+[node name="Player" parent="." index="2" unique_id=1212199937]
+position = Vector2(0, 48)
+
+[node name="Camera2D" parent="Player" index="3" unique_id=1542786777]
 limit_left = -412
 limit_top = -507
 limit_right = 1179
