@@ -18,7 +18,9 @@ public partial class Player : CharacterBody2D {
 
     private float CoyoteTimer = 0f;
     private readonly float CoyoteBuffer = .05f;
-    private readonly string BulletScenePath = "res://scenes/bullet.tscn";
+
+    private float ShootAnimationCooldown = 0f;
+    private readonly float ShootAnimationBuffer = 1f;
 
     private enum Direction {
         Left,
@@ -77,7 +79,7 @@ public partial class Player : CharacterBody2D {
         MoveAndSlide();
 
         // Animation must be played *AFTER* physics related processes!
-        PlayAnimation();
+        PlayAnimation(dt);
     }
 
     private void PlayerFall(float delta) {
@@ -145,7 +147,7 @@ public partial class Player : CharacterBody2D {
         }
     }
 
-    private void PlayAnimation() {
+    private void PlayAnimation(float delta) {
         // Determine LookingAt direction.
         bool Moving = false;
 
@@ -158,19 +160,37 @@ public partial class Player : CharacterBody2D {
             Moving = true;
         }
 
+        bool Shot = Input.IsActionPressed("shoot");
+        if (Shot)
+            ShootAnimationCooldown = ShootAnimationBuffer;
+        else
+            ShootAnimationCooldown -= delta;
+
         // Determine CurrentAnimationState
         if (Input.IsActionPressed("jump") || !IsOnFloor()) {
+            ShootAnimationCooldown = 0f; // reset
             CurrentAnimationState = AnimationState.Jump;
         } else if (Moving) {
-            if (Input.IsActionPressed("shoot"))
+            if (Shot) {
                 CurrentAnimationState = AnimationState.RunAndShoot;
-            else
+            } else {
                 CurrentAnimationState = AnimationState.Run;
+            }
         } else {
-            if (Input.IsActionPressed("shoot"))
+            if (Shot) {
                 CurrentAnimationState = AnimationState.Shoot;
-            else
+            } else {
                 CurrentAnimationState = AnimationState.Idle;
+            }
+        }
+
+        // Let the shoot animation run for a bit (prevents spam switching animation)
+        if (ShootAnimationCooldown > 0f) {
+            if (Moving) {
+                CurrentAnimationState = AnimationState.RunAndShoot;
+            } else {
+                CurrentAnimationState = AnimationState.Shoot;
+            }
         }
 
         Sprite.FlipH = LookingAt == Direction.Left;
