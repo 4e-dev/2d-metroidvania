@@ -2,38 +2,80 @@ using Godot;
 using System;
 using System.Diagnostics; // for Debug.Assert
 
-// TODO: Add an animation for hitting a collision shape (enemy, wall)
-// TODO: Create an Enemy group... might be useful for later
+// TODO: Check for if hit was in Enemy group... might be useful
+// TODO: Create a hitbox for the enemy... I think the current collisionshape works right?
 
 public partial class Bullet : Area2D {
-    [Export] private int Speed = 500;
-    private Vector2 Direction;
-    private Vector2 PlayerVelocity;
+    private enum AnimationState {
+        Impact,
+        Shot,
+        Count
+    };
+
+    [Export] private int BaseSpeed = 500;
+    private AnimatedSprite2D Sprite;
+    private AnimationState CurrentAnimationState;
+    private string[] AnimationNameByState;
+    private bool Collided = false;
+
+    private Vector2 _direction;
+    public Vector2 Direction {
+        get => _direction;
+        set => _direction = value.Normalized();
+    }
+
+    private Vector2 _playerVelocity;
+    public Vector2 PlayerVelocity {
+        get => _playerVelocity;
+        set => _playerVelocity = value;
+    }
 
     public override void _Ready() {
+        // Set up signal
         SetMonitorable(true);
         SetMonitoring(true);
         BodyEntered += OnBodyEntered;
+
+        // Aggregate animation names
+        AnimationNameByState = new string[(int)AnimationState.Count];
+        AnimationNameByState[(int)AnimationState.Shot]      = "shot";
+        AnimationNameByState[(int)AnimationState.Impact]    = "impact";
+
+        // Default animation
+        CurrentAnimationState = AnimationState.Shot;
+
+        // Sprite setup
+        Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        Sprite.AnimationFinished += OnAnimationFinished;
     }
 
     public override void _PhysicsProcess(double delta) {
-        Position += Direction * (Speed + MathF.Abs(PlayerVelocity.X)) * (float)delta;
+        float dt = (float)delta;
+        if (!Collided) {
+            int TotalBulletVelocity = BaseSpeed + (int)MathF.Abs(PlayerVelocity.X);
+            Position += _direction * TotalBulletVelocity * dt;
+        }
     }
 
-    public void SetDirection(Vector2 _Direction) {
-        Direction = _Direction.Normalized();
+    // Signal callback functions
+    private void OnAnimationFinished() {
+        QueueFree();
     }
 
-    public void SetPlayerVelocity(Vector2 _PlayerVelocity) {
-        PlayerVelocity = _PlayerVelocity;
+    private void OnBodyEntered(Node2D Body) {
+        CurrentAnimationState = AnimationState.Impact;
+        Collided = true;
+
+        Sprite.Play("impact");
+        Sprite.SpriteFrames.SetAnimationLoop("impact", false);
+
+        // Prevent accidental hits
+        CollisionLayer = 0;
+        CollisionMask = 0;
     }
 
+    // Helper
     private string MissingNodeMessage(string Node) {
         return $"Missing required node: {Node}\nEnsure it exists within the current SceneTree";
-    }
-
-    // For signals
-    private void OnBodyEntered(Node2D Body) {
-        QueueFree();
     }
 }

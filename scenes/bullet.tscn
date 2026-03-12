@@ -2,6 +2,23 @@
 
 [ext_resource type="Texture2D" uid="uid://487kvl5t1jnk" path="res://assets/PNG/spritesheets/Fx/shot.png" id="1_nulm2"]
 [ext_resource type="Script" uid="uid://c5vfxfo0gpeka" path="res://scripts/Bullet.cs" id="1_y25gk"]
+[ext_resource type="Texture2D" uid="uid://qrth2s0p0luq" path="res://assets/PNG/spritesheets/Fx/impact.png" id="2_l5glv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eoqba"]
+atlas = ExtResource("2_l5glv")
+region = Rect2(0, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qncy5"]
+atlas = ExtResource("2_l5glv")
+region = Rect2(12, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tamys"]
+atlas = ExtResource("2_l5glv")
+region = Rect2(24, 0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_26lx3"]
+atlas = ExtResource("2_l5glv")
+region = Rect2(36, 0, 12, 12)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mkf8s"]
 atlas = ExtResource("1_nulm2")
@@ -15,13 +32,30 @@ region = Rect2(6, 0, 6, 4)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_eoqba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qncy5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tamys")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_26lx3")
+}],
+"loop": true,
+"name": &"impact",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_mkf8s")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_y25gk")
 }],
 "loop": true,
-"name": &"default",
+"name": &"shot",
 "speed": 10.0
 }]
 
@@ -33,7 +67,8 @@ script = ExtResource("1_y25gk")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=20334885]
 sprite_frames = SubResource("SpriteFrames_l5glv")
-frame_progress = 0.68958616
+animation = &"impact"
+frame_progress = 0.24100326
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=509590623]
 shape = SubResource("CircleShape2D_mkf8s")

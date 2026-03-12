@@ -131,18 +131,14 @@ public partial class Player : CharacterBody2D {
                 float FlippedX = Bullet.GlobalPosition.X - (2 * RelativeXPosition);
                 Bullet.GlobalPosition = new Vector2(FlippedX, Bullet.GlobalPosition.Y);
             }
-
-            Vector2 BulletDirection = LookingAt switch {
+            Bullet.Direction = LookingAt switch {
                 Direction.Left  => Vector2.Left,
                 Direction.Right => Vector2.Right,
                 Direction.Up    => Vector2.Up,
                 Direction.Down  => Vector2.Down
             };
-            Bullet.SetDirection(BulletDirection);
+            Bullet.PlayerVelocity = Velocity;
             Bullets.AddChild(Bullet);
-
-            // Player velocity affects bullet velocity (just like real life, right?)
-            Bullet.SetPlayerVelocity(Velocity);
         }
     }
 

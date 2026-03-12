@@ -2,6 +2,9 @@ using Godot;
 using System;
 using System.Linq;
 
+// TODO: play a special animation when an enemy is killed...
+// TODO: Create an Enemy group... might be useful for later
+
 public partial class EnemyCrab : CharacterBody2D
 {
     [Export] public float Gravity = 1000f;
