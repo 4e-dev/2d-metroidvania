@@ -5,36 +5,32 @@ using System.Linq;
 // TODO: play a special animation when an enemy is killed...
 // TODO: Create an Enemy group... might be useful for later
 
-public partial class EnemyCrab : CharacterBody2D
-{
-    [Export] public float Gravity = 1000f;
-    [Export] public Node2D PatrolPoints { get; set; }
-    [Export] public int Speed = 3000;
+public partial class EnemyCrab : CharacterBody2D {
     [Export] public AnimatedSprite2D Sprite { get; set; }
+    [Export] public Node2D PatrolPoints { get; set; }
+    [Export] public float Gravity = 1000f;
+    [Export] public int Speed = 3000;
 
-    private enum AnimationState
-    {
+    private enum AnimationState {
         Idle,
         Walk
     }
     private AnimationState _animationState;
+    private Godot.Collections.Array<Vector2> _pointPositions;
+    private Vector2 _crabWalkingDirection;
+    private Vector2 _targetPointPosition;
     private int _numberOfPoints;
     private int _targetPointPositionIndex = 0;
-    private Godot.Collections.Array<Vector2> _pointPositions;
-    private Vector2 _targetPointPosition;
-    private Vector2 _crabWalkingDirection;
 
     private Timer _waitAtPatrolPoint;
     private bool _isWaiting = false;
 
-    public override void _Ready()
-    {
+    public override void _Ready() {
         // default animation state
         _animationState = AnimationState.Idle;
 
         // setting up enemy patrol points
-        if (PatrolPoints == null)
-        {
+        if (PatrolPoints == null) {
             GD.Print("ERROR - Enemy has no patrol points. Make sure it's assigned via level inspector!");
             return;
         } 
@@ -43,8 +39,7 @@ public partial class EnemyCrab : CharacterBody2D
         Godot.Collections.Array<Node> PatrolPointChildren = PatrolPoints.GetChildren();
         _numberOfPoints = PatrolPointChildren.Count;
 
-        for (int i = 0; i < _numberOfPoints; ++i)
-        {
+        for (int i = 0; i < _numberOfPoints; ++i) {
             Node2D Point = (Node2D)PatrolPointChildren[i];
             _pointPositions.Add(Point.GlobalPosition);
         }
@@ -61,8 +56,7 @@ public partial class EnemyCrab : CharacterBody2D
         _waitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
+    public override void _PhysicsProcess(double delta) {
         float dt = (float)delta;
 
         CrabFalling(dt);
@@ -73,18 +67,15 @@ public partial class EnemyCrab : CharacterBody2D
         PlayAnimation();
     }
 
-    private void CrabFalling(float delta)
-    {
-        if (!IsOnFloor())
-        {
+    private void CrabFalling(float delta) {
+        if (!IsOnFloor()) {
             Vector2 DownwardVelocity = Velocity;
             DownwardVelocity.Y += Gravity * delta;
             Velocity = DownwardVelocity;
         }
     }
 
-    private void CrabWalking(float delta)
-    {
+    private void CrabWalking(float delta) {
         // crab must wait after reaching a patrol point
         if (_isWaiting)
             return;
@@ -92,8 +83,7 @@ public partial class EnemyCrab : CharacterBody2D
         double Distance = Math.Abs(Position.X - _targetPointPosition.X);
         bool CrabReachedPatrolPoint = Distance < 0.5;
 
-        if (CrabReachedPatrolPoint)
-        {
+        if (CrabReachedPatrolPoint) {
             Velocity = Vector2.Zero;
             _isWaiting = true;
             _targetPointPositionIndex = (_targetPointPositionIndex + 1) % _numberOfPoints;
@@ -102,8 +92,7 @@ public partial class EnemyCrab : CharacterBody2D
             float WaitTime = 2f;
             _waitAtPatrolPoint.Start(WaitTime);
         }
-        else
-        {  
+        else {  
             Vector2 TargetVelocity = Velocity;
             TargetVelocity.X = _crabWalkingDirection.X * Speed * delta;
             Velocity = TargetVelocity;
@@ -112,38 +101,29 @@ public partial class EnemyCrab : CharacterBody2D
         _crabWalkingDirection = _targetPointPosition.X > Position.X ? Vector2.Right : Vector2.Left;
     }
 
-    private void PlayAnimation()
-    {
-        if (Sprite == null)
-        {
+    private void PlayAnimation() {
+        if (Sprite == null) {
             GD.Print("ERROR - EnemyCrab sprite not set. Unable to set animations");
             return;
         }
 
         bool IsMoving = Math.Abs(Velocity.X) > 0;
 
-        if (IsMoving)
-        {
+        if (IsMoving) {
             Sprite.FlipH = Velocity.X > 0;
             _animationState = AnimationState.Walk;
         }
-        else
-        {
+        else {
             _animationState = AnimationState.Idle;
         }
 
-        switch (_animationState)
-        {
-            case AnimationState.Idle:
-            {
+        switch (_animationState) {
+            case AnimationState.Idle: {
                 Sprite.Play("crab-idle");
-            }
-            break;
-            case AnimationState.Walk:
-            {
+            } break;
+            case AnimationState.Walk: {
                 Sprite.Play("crab-walk");
-            }
-            break;
+            } break;
         }
     }
 
