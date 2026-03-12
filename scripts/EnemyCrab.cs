@@ -15,19 +15,19 @@ public partial class EnemyCrab : CharacterBody2D {
         Idle,
         Walk
     }
-    private AnimationState _animationState;
-    private Godot.Collections.Array<Vector2> _pointPositions;
-    private Vector2 _crabWalkingDirection;
-    private Vector2 _targetPointPosition;
-    private int _numberOfPoints;
-    private int _targetPointPositionIndex = 0;
+    private AnimationState CurrentAnimationState;
+    private Godot.Collections.Array<Vector2> PointPositions;
+    private Vector2 WalkingDirection;
+    private Vector2 TargetPointPosition;
+    private int NumberOfPoints;
+    private int TargetPointPositionIndex = 0;
 
-    private Timer _waitAtPatrolPoint;
-    private bool _isWaiting = false;
+    private Timer WaitAtPatrolPoint;
+    private bool IsWaiting = false;
 
     public override void _Ready() {
         // default animation state
-        _animationState = AnimationState.Idle;
+        CurrentAnimationState = AnimationState.Idle;
 
         // setting up enemy patrol points
         if (PatrolPoints == null) {
@@ -35,25 +35,25 @@ public partial class EnemyCrab : CharacterBody2D {
             return;
         } 
 
-        _pointPositions = new Godot.Collections.Array<Vector2>();
+        PointPositions = new Godot.Collections.Array<Vector2>();
         Godot.Collections.Array<Node> PatrolPointChildren = PatrolPoints.GetChildren();
-        _numberOfPoints = PatrolPointChildren.Count;
+        NumberOfPoints = PatrolPointChildren.Count;
 
-        for (int i = 0; i < _numberOfPoints; ++i) {
+        for (int i = 0; i < NumberOfPoints; ++i) {
             Node2D Point = (Node2D)PatrolPointChildren[i];
-            _pointPositions.Add(Point.GlobalPosition);
+            PointPositions.Add(Point.GlobalPosition);
         }
 
         // set default target marker and walking direction
-        _targetPointPosition = _pointPositions[0];
-        _crabWalkingDirection = Vector2.Left; // arbitrary - maybe randomize this?
+        TargetPointPosition = PointPositions[0];
+        WalkingDirection = Vector2.Left; // arbitrary - maybe randomize this?
 
         // wait logic with Timer node
-        _waitAtPatrolPoint = GetNode<Timer>("WaitAtPatrolPoint");
-        _waitAtPatrolPoint.SetOneShot(true);
+        WaitAtPatrolPoint = GetNode<Timer>("WaitAtPatrolPoint");
+        WaitAtPatrolPoint.SetOneShot(true);
 
         // connect timeout signal
-        _waitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
+        WaitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -77,28 +77,28 @@ public partial class EnemyCrab : CharacterBody2D {
 
     private void CrabWalking(float delta) {
         // crab must wait after reaching a patrol point
-        if (_isWaiting)
+        if (IsWaiting)
             return;
 
-        double Distance = Math.Abs(Position.X - _targetPointPosition.X);
+        double Distance = Math.Abs(Position.X - TargetPointPosition.X);
         bool CrabReachedPatrolPoint = Distance < 0.5;
 
         if (CrabReachedPatrolPoint) {
             Velocity = Vector2.Zero;
-            _isWaiting = true;
-            _targetPointPositionIndex = (_targetPointPositionIndex + 1) % _numberOfPoints;
+            IsWaiting = true;
+            TargetPointPositionIndex = (TargetPointPositionIndex + 1) % NumberOfPoints;
 
             // start timer
             float WaitTime = 2f;
-            _waitAtPatrolPoint.Start(WaitTime);
+            WaitAtPatrolPoint.Start(WaitTime);
         }
         else {  
             Vector2 TargetVelocity = Velocity;
-            TargetVelocity.X = _crabWalkingDirection.X * Speed * delta;
+            TargetVelocity.X = WalkingDirection.X * Speed * delta;
             Velocity = TargetVelocity;
         }
-        _targetPointPosition = _pointPositions[_targetPointPositionIndex];
-        _crabWalkingDirection = _targetPointPosition.X > Position.X ? Vector2.Right : Vector2.Left;
+        TargetPointPosition = PointPositions[TargetPointPositionIndex];
+        WalkingDirection = TargetPointPosition.X > Position.X ? Vector2.Right : Vector2.Left;
     }
 
     private void PlayAnimation() {
@@ -111,13 +111,13 @@ public partial class EnemyCrab : CharacterBody2D {
 
         if (IsMoving) {
             Sprite.FlipH = Velocity.X > 0;
-            _animationState = AnimationState.Walk;
+            CurrentAnimationState = AnimationState.Walk;
         }
         else {
-            _animationState = AnimationState.Idle;
+            CurrentAnimationState = AnimationState.Idle;
         }
 
-        switch (_animationState) {
+        switch (CurrentAnimationState) {
             case AnimationState.Idle: {
                 Sprite.Play("crab-idle");
             } break;
@@ -128,6 +128,6 @@ public partial class EnemyCrab : CharacterBody2D {
     }
 
     private void OnWaitAtPatrolPointTimeout() {
-        _isWaiting = false;
+        IsWaiting = false;
     }
 }
