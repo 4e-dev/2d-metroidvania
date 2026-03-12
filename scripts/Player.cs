@@ -9,11 +9,14 @@ public partial class Player : CharacterBody2D {
     [Export] private int Speed = 15000;
 
     private AnimationState CurrentAnimationState;
-    private Marker2D BulletSpawner;
-    private Node2D Bullets;
-    private PackedScene BulletScene;
-    private float CoyoteTimer = 0f;
     private float HorizontalDirection;
+
+    private Node2D Bullets;
+    private Marker2D BulletSpawner;
+    private PackedScene BulletScene;
+    private readonly string BulletScenePath = "res://scenes/bullet.tscn";
+
+    private float CoyoteTimer = 0f;
     private readonly float CoyoteBuffer = .05f;
     private readonly string BulletScenePath = "res://scenes/bullet.tscn";
 
