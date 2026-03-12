@@ -189,6 +189,7 @@ public partial class Player : CharacterBody2D {
             if (Moving) {
                 CurrentAnimationState = AnimationState.RunAndShoot;
             } else {
+                ShootAnimationCooldown -= delta; // run timer down faster if we're not moving
                 CurrentAnimationState = AnimationState.Shoot;
             }
         }
