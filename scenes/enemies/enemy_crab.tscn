@@ -92,3 +92,10 @@ position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_my6b7")
 
 [node name="WaitAtPatrolPoint" type="Timer" parent="." unique_id=1678722298]
+
+[node name="PatrolPoints" type="Node2D" parent="." unique_id=1487471642]
+
+[node name="Left" type="Marker2D" parent="PatrolPoints" unique_id=61836139]
+position = Vector2(0, 1)
+
+[node name="Right" type="Marker2D" parent="PatrolPoints" unique_id=1170425911]
