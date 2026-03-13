@@ -3,6 +3,27 @@
 [ext_resource type="Script" uid="uid://dbl02q11wj1mj" path="res://scripts/EnemyCrab.cs" id="1_i34dn"]
 [ext_resource type="Texture2D" uid="uid://bi44yepth8cd8" path="res://assets/PNG/spritesheets/enemies/crab-idle.png" id="1_my6b7"]
 [ext_resource type="Texture2D" uid="uid://8grvfpg0mc72" path="res://assets/PNG/spritesheets/enemies/crab-walk.png" id="2_i34dn"]
+[ext_resource type="Texture2D" uid="uid://ck40hbhbs2yve" path="res://assets/PNG/spritesheets/Fx/enemy-death.png" id="2_yhf7k"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0x7xn"]
+atlas = ExtResource("2_yhf7k")
+region = Rect2(0, 0, 67, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tjhv7"]
+atlas = ExtResource("2_yhf7k")
+region = Rect2(67, 0, 67, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ul3l"]
+atlas = ExtResource("2_yhf7k")
+region = Rect2(134, 0, 67, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c5jrb"]
+atlas = ExtResource("2_yhf7k")
+region = Rect2(201, 0, 67, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uj4dc"]
+atlas = ExtResource("2_yhf7k")
+region = Rect2(268, 0, 67, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yhf7k"]
 atlas = ExtResource("1_my6b7")
@@ -40,6 +61,26 @@ region = Rect2(144, 0, 48, 32)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_0x7xn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tjhv7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3ul3l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c5jrb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uj4dc")
+}],
+"loop": true,
+"name": &"death",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_yhf7k")
 }, {
 "duration": 1.0,
@@ -52,7 +93,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_1ocow")
 }],
 "loop": true,
-"name": &"crab-idle",
+"name": &"idle",
 "speed": 8.0
 }, {
 "frames": [{
@@ -69,7 +110,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_mknej")
 }],
 "loop": true,
-"name": &"crab-walk",
+"name": &"walk",
 "speed": 8.0
 }]
 
@@ -83,9 +124,9 @@ Sprite = NodePath("AnimatedSprite2D")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1062933666]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_0x7xn")
-animation = &"crab-idle"
-autoplay = "crab-idle"
-frame_progress = 0.721278
+animation = &"death"
+autoplay = "idle"
+frame_progress = 0.75163525
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
 position = Vector2(0, -13)
