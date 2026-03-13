@@ -26,14 +26,9 @@ public partial class EnemyCrab : CharacterBody2D {
     private bool IsWaiting = false;
 
     public override void _Ready() {
-        // default animation state
         CurrentAnimationState = AnimationState.Idle;
 
-        // setting up enemy patrol points
-        if (PatrolPoints == null) {
-            GD.Print("ERROR - Enemy has no patrol points. Make sure it's assigned via level inspector!");
-            return;
-        } 
+        PatrolPoints = GetNode<Node2D>("PatrolPoints");
 
         PointPositions = new Godot.Collections.Array<Vector2>();
         Godot.Collections.Array<Node> PatrolPointChildren = PatrolPoints.GetChildren();
