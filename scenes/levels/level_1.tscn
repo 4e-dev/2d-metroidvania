@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bmlmskqadm3m8" path="res://scenes/base_level.tscn" id="1_ksju7"]
 [ext_resource type="PackedScene" uid="uid://bkit8bwi5cmpr" path="res://scenes/parallax_background.tscn" id="2_6iamk"]
+[ext_resource type="PackedScene" uid="uid://d2vvjj6yk3aex" path="res://scenes/enemies/enemy_crab.tscn" id="4_x42e6"]
 
 [node name="BaseLevel" unique_id=2146417796 instance=ExtResource("1_ksju7")]
 
@@ -31,3 +32,16 @@ editor_draw_limits = true
 
 [node name="Bullets" type="Node2D" parent="." index="3" unique_id=1520162742]
 z_index = -1
+
+[node name="EnemyCrab" parent="." index="4" unique_id=1581630291 node_paths=PackedStringArray("_patrolPoints") instance=ExtResource("4_x42e6")]
+position = Vector2(153, 51)
+_patrolPoints = NodePath("../PatrolPoints")
+
+[node name="PatrolPoints" type="Node2D" parent="." index="5" unique_id=77070738]
+position = Vector2(153, 51)
+
+[node name="Left" type="Marker2D" parent="PatrolPoints" index="0" unique_id=547851543]
+position = Vector2(-279, -2)
+
+[node name="Right" type="Marker2D" parent="PatrolPoints" index="1" unique_id=2002450767]
+position = Vector2(111, 0)

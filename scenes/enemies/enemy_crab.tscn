@@ -117,26 +117,18 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_my6b7"]
 size = Vector2(22, 26)
 
-[node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291 node_paths=PackedStringArray("Sprite")]
+[node name="EnemyCrab" type="CharacterBody2D" unique_id=1581630291]
 script = ExtResource("1_i34dn")
-Sprite = NodePath("AnimatedSprite2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1062933666]
 position = Vector2(0, -16)
 sprite_frames = SubResource("SpriteFrames_0x7xn")
 animation = &"death"
 autoplay = "idle"
-frame_progress = 0.75163525
+frame_progress = 0.9445931
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=116127084]
 position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_my6b7")
 
-[node name="WaitAtPatrolPoint" type="Timer" parent="." unique_id=1678722298]
-
-[node name="PatrolPoints" type="Node2D" parent="." unique_id=1487471642]
-
-[node name="Left" type="Marker2D" parent="PatrolPoints" unique_id=61836139]
-position = Vector2(0, 1)
-
-[node name="Right" type="Marker2D" parent="PatrolPoints" unique_id=1170425911]
+[node name="PatrolPointTimer" type="Timer" parent="." unique_id=1678722298]

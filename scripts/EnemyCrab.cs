@@ -1,128 +1,186 @@
 using Godot;
 using System;
-using System.Linq;
-
-// TODO: play a special animation when an enemy is killed...
-// TODO: Create an Enemy group... might be useful for later
 
 public partial class EnemyCrab : CharacterBody2D {
-    [Export] public AnimatedSprite2D Sprite { get; set; }
-    [Export] public Node2D PatrolPoints { get; set; }
-    [Export] public float Gravity = 1000f;
-    [Export] public int Speed = 3000;
+    //private AnimatedSprite2D Sprite;
+    //private Timer WaitTimer;
 
-    private enum AnimationState {
-        Idle,
-        Walk
-    }
-    private AnimationState CurrentAnimationState;
-    private Godot.Collections.Array<Vector2> PointPositions;
-    private Vector2 WalkingDirection;
-    private Vector2 TargetPointPosition;
-    private int NumberOfPoints;
-    private int TargetPointPositionIndex = 0;
+    //private Godot.Collections.Array<Marker2D> PatrolPoints;
+    //private Marker2D TargetPoint;
+    //private int TargetPointIndex = 0;
+    //private Vector2 Direction;
 
-    private Timer WaitAtPatrolPoint;
+    //private enum State { Waiting, Walking, Dead }
+    //private State _state;
+
+    //private int Health = 100;
+
+    //private const float Gravity = 1000f;
+    //private const int Speed = 50;
+    //private const float RaycastDistance = 50f;
+
+    //public override void _Ready() {
+    //    AddToGroup("enemy");
+
+    //    Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+
+    //    _state = State.Walking;
+
+    //    WaitTimer = GetNode<Timer>("WaitTimer");
+    //    WaitTimer.Timeout += OnTimerTimeout;
+
+    //    Node2D _patrolPoints = GetNode<Node2D>("PatrolPoints");
+    //    PatrolPoints = new();
+    //    foreach (Marker2D point in _patrolPoints.GetChildren())
+    //        PatrolPoints.Add(point);
+
+    //    TargetPoint = PatrolPoints[TargetPointIndex];
+    //    if (TargetPoint.GlobalPosition.X <= GlobalPosition.X)
+    //        Direction = Vector2.Left;
+    //    else
+    //        Direction = Vector2.Right;
+    //}
+
+    //public override void _PhysicsProcess(double delta) {
+    //    if (_state == State.Dead) {
+    //        Velocity = Vector2.Zero;
+
+    //        if (Sprite.Animation != "death")
+    //            Sprite.Play("death");
+    //        
+    //        if (!Sprite.IsPlaying())
+    //            QueueFree();
+    //        MoveAndSlide();
+    //        return;
+    //    }
+
+    //    float d = (float)delta;
+
+    //    // Apply gravity
+    //    if (!IsOnFloor())
+    //        Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity * d);
+
+    //    float distance = TargetPoint.GlobalPosition.X - GlobalPosition.X;
+    //    bool reachPatrolPoint = MathF.Abs(distance) < 5f;
+
+    //    if (_state == State.Walking) {
+    //        if (reachPatrolPoint) {
+    //            _state = State.Waiting;
+    //            Velocity = Vector2.Zero;
+    //            WaitTimer.Start(2f);
+
+
+    //        } else {
+    //            //Velocity = new Vector2(Direction.X * Speed, Velocity.Y);
+    //            Velocity = new Vector2(MathF.Sign(distance) * Speed, Velocity.Y);
+    //        }
+    //    }
+    //    else if (_state == State.Waiting) {
+    //        Velocity = Vector2.Zero;
+    //    }
+    //    MoveAndSlide();
+
+    //    // Animations
+    //    switch (_state) {
+    //        case State.Waiting:
+    //            Sprite.Play("idle");
+    //            break;
+
+    //        case State.Walking:
+    //            Sprite.Play("walk");
+    //            break;
+    //    }
+    //    Sprite.FlipH = Direction == Vector2.Right;
+    //}
+
+    //public void TakeDamage(int damage) {
+    //    Health -= damage;
+
+    //    if (Health <= 0) {
+    //        _state = State.Dead;
+    //        Velocity = Vector2.Zero;
+    //    }
+    //}
+
+    //private void OnTimerTimeout() {
+    //    _state = State.Walking;
+
+    //    TargetPointIndex = (TargetPointIndex + 1) % PatrolPoints.Count;
+    //    TargetPoint = PatrolPoints[TargetPointIndex];
+
+    //    Direction = TargetPoint.GlobalPosition.X < GlobalPosition.X
+    //        ? Vector2.Left
+    //        : Vector2.Right;
+    //}
+
+
+
+    private readonly float Gravity = 1000f;
+    private readonly float Speed = 100f;
+
+
+    [Export] private Node2D _patrolPoints;
+    private Godot.Collections.Array<Marker2D> PatrolPoints = new();
+    private int TargetPointIndex = 0;
+
+    private Timer PatrolPointTimer;
     private bool IsWaiting = false;
 
     public override void _Ready() {
-        CurrentAnimationState = AnimationState.Idle;
-
-        PatrolPoints = GetNode<Node2D>("PatrolPoints");
-
-        PointPositions = new Godot.Collections.Array<Vector2>();
-        Godot.Collections.Array<Node> PatrolPointChildren = PatrolPoints.GetChildren();
-        NumberOfPoints = PatrolPointChildren.Count;
-
-        for (int i = 0; i < NumberOfPoints; ++i) {
-            Node2D Point = (Node2D)PatrolPointChildren[i];
-            PointPositions.Add(Point.GlobalPosition);
+        foreach (Node node in _patrolPoints.GetChildren()) {
+            if (node is Marker2D point)
+                PatrolPoints.Add(point);
         }
 
-        // set default target marker and walking direction
-        TargetPointPosition = PointPositions[0];
-        WalkingDirection = Vector2.Left; // arbitrary - maybe randomize this?
-
-        // wait logic with Timer node
-        WaitAtPatrolPoint = GetNode<Timer>("WaitAtPatrolPoint");
-        WaitAtPatrolPoint.SetOneShot(true);
-
-        // connect timeout signal
-        WaitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
+        PatrolPointTimer = GetNode<Timer>("PatrolPointTimer");
+        PatrolPointTimer.WaitTime = 2f;
+        PatrolPointTimer.Timeout += OnPatrolPointTimerTimeout;
     }
 
     public override void _PhysicsProcess(double delta) {
-        float dt = (float)delta;
-
-        CrabFalling(dt);
-        CrabWalking(dt);
-
+        float d = (float)delta;
+        ApplyGravity(d);
+        Walking(d);
         MoveAndSlide();
-
-        PlayAnimation();
+        // TODO animation
     }
 
-    private void CrabFalling(float delta) {
-        if (!IsOnFloor()) {
-            Vector2 DownwardVelocity = Velocity;
-            DownwardVelocity.Y += Gravity * delta;
-            Velocity = DownwardVelocity;
-        }
+    private void ApplyGravity(float delta) {
+        if (!IsOnFloor())
+            Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity * delta);
     }
 
-    private void CrabWalking(float delta) {
-        // crab must wait after reaching a patrol point
+    private void Walking(float delta) {
         if (IsWaiting)
             return;
 
-        double Distance = Math.Abs(Position.X - TargetPointPosition.X);
-        bool CrabReachedPatrolPoint = Distance < 0.5;
+        Marker2D targetPoint = PatrolPoints[TargetPointIndex];
+        float distance = MathF.Abs(targetPoint.GlobalPosition.X - GlobalPosition.X);
 
-        if (CrabReachedPatrolPoint) {
-            Velocity = Vector2.Zero;
-            IsWaiting = true;
-            TargetPointPositionIndex = (TargetPointPositionIndex + 1) % NumberOfPoints;
+        bool reachPatrolPoint = distance <= 5f;
+        if (reachPatrolPoint) {
+            Wait();
 
-            // start timer
-            float WaitTime = 2f;
-            WaitAtPatrolPoint.Start(WaitTime);
-        }
-        else {  
-            Vector2 TargetVelocity = Velocity;
-            TargetVelocity.X = WalkingDirection.X * Speed * delta;
-            Velocity = TargetVelocity;
-        }
-        TargetPointPosition = PointPositions[TargetPointPositionIndex];
-        WalkingDirection = TargetPointPosition.X > Position.X ? Vector2.Right : Vector2.Left;
-    }
-
-    private void PlayAnimation() {
-        if (Sprite == null) {
-            GD.Print("ERROR - EnemyCrab sprite not set. Unable to set animations");
-            return;
-        }
-
-        bool IsMoving = Math.Abs(Velocity.X) > 0;
-
-        if (IsMoving) {
-            Sprite.FlipH = Velocity.X > 0;
-            CurrentAnimationState = AnimationState.Walk;
+            // Snap enemy to patrol point
+            GlobalPosition = new Vector2(targetPoint.GlobalPosition.X, GlobalPosition.Y);
         }
         else {
-            CurrentAnimationState = AnimationState.Idle;
-        }
-
-        switch (CurrentAnimationState) {
-            case AnimationState.Idle: {
-                Sprite.Play("crab-idle");
-            } break;
-            case AnimationState.Walk: {
-                Sprite.Play("crab-walk");
-            } break;
+            Vector2 direction = targetPoint.GlobalPosition.X < GlobalPosition.X
+                ? Vector2.Left
+                : Vector2.Right;
+            Velocity = new Vector2(Speed * direction.X, Velocity.Y);
         }
     }
 
-    private void OnWaitAtPatrolPointTimeout() {
+    private void Wait() {
+        IsWaiting = true;
+        Velocity = Vector2.Zero;
+        PatrolPointTimer.Start();
+    }
+
+    // Signals
+    private void OnPatrolPointTimerTimeout() {
         IsWaiting = false;
+        TargetPointIndex = (TargetPointIndex + 1) % PatrolPoints.Count;
     }
 }

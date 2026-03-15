@@ -1,0 +1,130 @@
+using Godot;
+using System;
+using System.Diagnostics;
+
+// TODO: play a special State when an enemy is killed...
+// TODO: Create an Enemy group... might be useful for later
+// TODO: Patrol point should default to the length of the current platform or when they detect walls
+    // but allow an option for customized distances
+
+public partial class EnemyCrab : CharacterBody2D {
+    private AnimatedSprite2D Sprite;
+    private float Gravity = 1000f;
+    private int Speed = 3000;
+
+    private RayCast2D WallCheck;
+    private RayCast2D FloorCheck;
+
+    private enum State { Waiting, Walking, Dead, Count }
+    private string[] AnimationName;
+    private State _state;
+
+    private Vector2 Direction;
+    private readonly float RaycastPosition = 50;
+    bool IsWaiting = false;
+
+    public override void _Ready() {
+        SetupRaycasts();
+        SetupTimer();
+        SetupSprite();
+        SetupAnimation();
+    }
+
+    public override void _PhysicsProcess(double delta) {
+        float dt = (float)delta;
+
+        ApplyGravity(dt);
+
+        switch (_state) {
+            case State.Waiting:
+                break;
+            case State.Walking:
+                Walking();
+                break;
+            case State.Dead:
+                break;
+        }        
+
+        Walking(dt);
+        MoveAndSlide();
+
+
+
+
+        PlayAnimation();
+    }
+
+    private void ApplyGravity(float delta) {
+        if (!IsOnFloor())
+            Velocity = new(Velocity.X, Velocity.Y + (Gravity * delta));
+    }
+
+    private void Walking(float delta) {
+        if (IsWaiting) {
+            return;
+        }
+
+        if (WallCheck.IsColliding() || !FloorCheck.IsColliding()) {
+            Velocity = Vector2.Zero;
+
+            // Turn around
+            Direction = Direction == Vector2.Left ? Vector2.Right : Vector2.Left;
+            WallCheck.TargetPosition = new Vector2(Direction.X * RaycastPosition, 0f);
+
+            // Wait
+            WaitAtPatrolPoint.Start(2f);
+            IsWaiting = true;
+        } else {
+            GD.Print("Updating direction");
+            Velocity = new(Direction.X * Speed * delta, Velocity.Y);
+        }
+    }
+
+    private void SetupRaycasts() {
+        WallCheck = GetNode<RayCast2D>("WallCheck"); Debug.Assert(WallCheck != null);
+        FloorCheck = GetNode<RayCast2D>("FloorCheck"); Debug.Assert(FloorCheck != null);
+
+        Direction = Vector2.Right; // TODO: Randomize this value
+        
+        WallCheck.TargetPosition = new Vector2(Direction.X * RaycastPosition, 0f);
+        FloorCheck.TargetPosition = new Vector2(Direction.X * 20f, RaycastPosition);
+
+        WallCheck.Enabled = true;
+        FloorCheck.Enabled = true;
+
+        WallCheck.ExcludeParent = true;
+        FloorCheck.ExcludeParent = true;
+    }
+
+    private void PlayAnimation() {
+        bool IsMoving = Math.Abs(Velocity.X) > 0;
+
+        _state = State.Waiting;
+        if (IsMoving) _state = State.Walking;
+
+        Sprite.FlipH = Direction == Vector2.Right;
+        Sprite.Play(AnimationName[(int)_state]);
+    }
+
+    // Initialization and setup
+    private void SetupTimer() {
+        WaitAtPatrolPoint = GetNode<Timer>("WaitAtPatrolPoint");
+        WaitAtPatrolPoint.Timeout += OnWaitAtPatrolPointTimeout;
+    }
+
+    private void SetupSprite() {
+        Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        Debug.Assert(Sprite != null);
+    }
+
+    private void SetupAnimation() {
+        AnimationName = new string[(int)State.Count];
+        AnimationName[(int)State.Waiting] = "idle";
+        AnimationName[(int)State.Walking] = "walk";
+        AnimationName[(int)State.Dead] = "death";
+    }
+
+    private void OnWaitAtPatrolPointTimeout() {
+        IsWaiting = false;
+    }
+}
